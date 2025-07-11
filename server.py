@@ -31,12 +31,19 @@ def detect_emotion():
         # Get text from query parameters
         text_to_analyze = request.args.get('textToAnalyze', '')
 
-        if not text_to_analyze:
-            return "Error: 'textToAnalyze' query parameter is required", 400
+        if not text_to_analyze.strip():
+            return (
+            "Invalid text! Please try again!", 
+            400, 
+            {"Content-Type": "text/plain"}
+        )
 
         emotion_response = emotion_detector(text_to_analyze)
 
-        if emotion_response['dominant_emotion'] is None:
+        if (
+            emotion_response is None or 
+            emotion_response.get('dominant_emotion') is None
+        ):
             return "Invalid text! Please try again!", 400
 
         # Build response string
@@ -53,4 +60,4 @@ def detect_emotion():
         return f"Request failed: {str(e)}", 500
 
 if __name__ == '__main__':
-    app.run(host='127.0.0.1', port=5000, debug=True)
+    app.run(host='127.0.0.1', port=5001, debug=True)
